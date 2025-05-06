@@ -1,0 +1,514 @@
+---
+format:
+  revealjs: 
+    theme: [default, styles.scss]
+    width: 1280
+    height: 720
+    include-after-body: 
+      - "all-the-js-code.html"
+title: "sasquatch: Using SAS, R, and Quarto together"
+author: "Ryan Zomorrodi"
+code-line-numbers: false
+revealjs-plugins:
+  - codewindow
+  - highlightword
+editor:
+  render-on-save: true
+engine: knitr
+---
+
+
+## About me
+
+::::: columns
+
+::: {.column width="60%"}
+- Research Analyst at the Children's Environmental Health Initiative
+- Graduated with an MS in Biostatistics from the University of Illinois Chicago this May
+- Open source contributor/maintainer of projects such as the CDC Rate Stabilizing ArcGIS Pro Python Toolbox, as well as the R packages `sasquatch`, `healthatlas`, and `centr`.
+:::
+
+::: {.column width="40%"}
+![](photos/headshot.png){.circle}
+
+```{css}
+img.circle {
+    border-radius: 50%;
+    box-shadow: 15px 15px 5px rgba(0, 0, 0, 0.2);
+}
+```
+:::
+
+:::::
+
+## Why make sasquatch?
+
+<br>To complete my homework.
+
+##
+
+Take this question:
+
+::: {.question}
+<br>"Fit a model with random subject intercepts and week effects. Is this model significantly better than the random-intercepts model? Write the two-level model and interpret the parameters in this model."
+
+```{css}
+.question {
+    font-family: 'Times New Roman', Times, serif;
+}
+```
+:::
+
+<br>To answer this question I must:
+
+- Run SAS code
+- Include SAS output within my answer
+- Interpret the output
+- Write out the model formula
+
+# What were my options?
+
+## ODS
+
+I could use `PROC ODSTEXT` to add my interpretations into the ODS output  
+
+::: {.fragment}
+[✔]{style="color:#0dbc79;"} Reproducable  
+[✔]{style="color:#0dbc79;"} No setup
+:::
+
+:::: {.fragment}
+[✖]{style="color: #cd3131"} `PROC ODSTEXT` statements would liter my code  
+[✖]{style="color: #cd3131"} The output wouldn't include my code  
+[✖]{style="color: #cd3131"} I can't write formulas 
+:::
+
+## Word document
+
+I could just screenshot my output and add it to a word document
+
+::: {.fragment}
+[✔]{style="color:#0dbc79;"} Math notation is supported  
+[✔]{style="color:#0dbc79;"} Answers do not have to be embeded inside the code
+:::
+
+:::: {.fragment}
+[✖]{style="color: #cd3131"} Not reproducable  
+[✖]{style="color: #cd3131"} Tedious 
+:::
+
+## Jupyter notebooks
+
+I could use the SAS jupyter kernel and I probably should have but...  
+
+:::: {.fragment}
+it would be really nice to have  
+
+- The ability to show output AND log  
+- Multi-language support
+:::
+
+## The alternative... Quarto documents
+
+::::: {.columns .v-center-container}
+::: {.column width="60%"}
+Quarto is a
+
+- Language-agnostic open-source publishing system
+- Support multiple output formats including: articles, presentations, dashboards, websites, blogs, and books in HTML, PDF, MS Word, ePub, and more
+:::
+::: {.column width="40%"}
+![](photos/quarto.png)
+:::
+:::::
+# So... what does sasquatch do?
+
+##
+
+sasquatch serves as a bridge between R and SAS, enabling:
+
+- Two-way data exchange between SAS and R  
+- Rendering of SAS output (HTML or LaTeX) within Quarto or R Markdown documents
+- Interactive execution of SAS code blocks  
+- Basic file management on a SAS client  
+
+
+::::: {.columns .v-center-container}
+
+::: {.column width="20%"}
+![](photos/sas-logo-sas-blue.png)
+:::
+::: {.column width="5%"}
+### +
+:::
+::: {.column width="20%"}
+![](photos/R_logo.svg.png)
+:::
+::: {.column width="5%"}
+### +
+:::
+::: {.column width="20%"}
+![](photos/quarto.png)
+:::
+::: {.column width="5%"}
+### =
+:::
+::: {.column width="20%"}
+![](photos/sasquatch.png)
+:::
+:::::
+
+```{css}
+.v-center-container {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+```
+
+## How does sasquatch send data between R and SAS?
+
+::::: {.columns .v-center-container}
+
+::: {.column width="30%"}
+![](photos/sasquatch.png){style="display: block; margin-left: auto; margin-right: auto; width: 50%;"}
+:::
+::: {.column width="5%"}
+:::: {.fragment fragment-index=1}
+### {{< fa arrow-right >}}
+
+:::
+:::
+::: {.column width="30%"}
+:::: {.fragment fragment-index=1}
+![](photos/logo-reticulate.png){style="display: block; margin-left: auto; margin-right: auto; width: 50%;"}
+:::
+:::
+::: {.column width="5%"}
+:::: {.fragment fragment-index=2}
+### {{< fa arrow-right >}}
+
+:::
+:::
+::: {.column width="30%"}
+:::: {.fragment fragment-index=2}
+![](photos/saspy.png){style="display: block; margin-left: auto; margin-right: auto; width: 50%;"}
+:::
+:::
+:::::
+
+::::: {.columns}
+
+::: {.column width="30%"}
+:::: {.codewindow .r}
+```r
+library(sasquatch)
+sas_connect()
+
+sas_from_r(
+  x = mtcars,
+  table_name = "mtcars",
+  libref = "work"
+)
+```
+::::
+:::
+::: {.column width="5%"}
+:::
+::: {.column width="30%"}
+:::: {.fragment fragment-index=1}
+:::: {.codewindow .r}
+```r
+library(reticulate)
+saspy <- import("saspy")
+session <- saspy$SASsession()
+
+session$df2sd(
+  df = r_to_py(mtcars),
+  table = "mtcars",
+  libref = "work"
+)
+```
+::::
+:::
+:::
+::: {.column width="5%"}
+:::
+::: {.column width="30%"}
+:::: {.fragment fragment-index=2}
+:::: {.codewindow .python}
+```python
+import saspy
+
+session = saspy.SASsession()
+
+session.df2sd(
+  df = r.mtcars, 
+  table = "mtcars", 
+  libref = "work"
+)
+```
+::::
+:::
+:::
+:::::
+
+::: {.notes}
+sasquatch relies on the {reticulate} package to convert r data.frames to pandas DataFrames
+and call saspy's df2sd().
+:::
+
+## It's not that easy!
+
+::::: columns
+::: {.column width="50%"}
+sasquatch does quite a few things for you
+
+- Checks column names and types
+- Provides helpful errors
+- Prevents type casting errors
+- Automatically adds formats
+:::
+::: {.column width="5%"}
+:::
+::: {.column width="45%"}
+![](photos/type_error.png)
+
+![](photos/connection_error.png)
+
+![](photos/col_name_error.png)
+
+![](photos/sas_connect_error.png)
+:::
+:::::
+
+## How does sasquatch interface with Quarto?
+
+::: {.fragment fragment-index=1}
+sasquatch introduces a new custom language `knitr` engine.
+:::
+
+![](photos/rstudio-qmd-how-it-works.png)
+
+::::::: {.fragment fragment-index=1}
+
+### <i class="fa fa-right-left" style="transform: rotate(300deg); display: inline-block; margin-left: 20%"></i>
+
+::::: {.columns .v-center-container}
+::: {.column width="12%"}
+:::
+::: {.column width="13%"}
+![](photos/sasquatch.png)
+:::
+::: {.column width="5%"}
+### {{< fa right-left >}}
+
+:::
+::: {.column width="13%"}
+![](photos/saspy.png)
+:::
+::: {.column width="57%"}
+:::
+:::::
+:::::::
+
+::: {.notes}
+Quarto document (qmd) -> knitr  
+Knitr passes code chunk to language engine  
+Engine produces output which is embeded in markdown  
+Markdown is rendered to output via pandoc  
+
+sasquatch introduces a new {sas} engine which passes code chunk to saspy and returns HTML or latex
+:::
+
+## Writing a sasquatch quarto document
+
+::: {.fragment fragment-index=1 .highlightword word="html" style="background:#8cc1ff;"}
+:::
+::: {.fragment fragment-index=2 .highlightword word="knitr" style="background:#8cc1ff;"}
+:::
+::: {.fragment fragment-index=2 .highlightword word="html" style="background:#fff;"}
+:::
+
+:::::: {.columns}
+::::: {.column width="50%"}
+:::: {.codewindow .quarto}
+example.qmd
+`````md
+---
+title: "Example"
+format: html
+engine: knitr
+---
+
+`````
+::::
+:::::
+::::: {.column width="50%"}
+
+::::: {.codewindow .html}
+example.html
+<iframe src="iframes/example_format.html" style="width: 100%; height: 340px;"></iframe>
+
+:::::
+:::::
+::::::
+
+## Writing a sasquatch quarto document
+
+::: {.fragment fragment-index=1 .highlightword word="library(sasquatch)" style="background:#8cc1ff;"}
+:::
+::: {.fragment fragment-index=2 .highlightword word="sas_connect()" style="background:#8cc1ff;"}
+:::
+::: {.fragment fragment-index=2 .highlightword word="library(sasquatch)" style="background:#fff;"}
+:::
+
+:::::: {.columns}
+::::: {.column width="50%"}
+:::: {.codewindow .quarto}
+example.qmd
+`````md
+---
+title: "Example"
+format: html
+engine: knitr
+---
+
+```{{r}}
+library(sasquatch)
+sas_connect()
+```
+`````
+::::
+:::::
+::::: {.column width="50%"}
+
+::::: {.codewindow .html}
+example.html
+<iframe src="iframes/example_sas_connect.html" style="width: 100%; height: 340px;"></iframe>
+
+:::::
+:::::
+::::::
+
+## Writing a sasquatch quarto document
+
+:::::: {.columns}
+::::: {.column width="50%"}
+:::: {.codewindow .quarto}
+example.qmd
+`````md
+---
+title: "Example"
+format: html
+engine: knitr
+---
+
+```{{r}}
+library(sasquatch)
+sas_connect()
+```
+
+```{{sas}}
+PROC PRINT DATA = sashelp.cars (OBS = 10);
+    VAR make model type origin msrp invoice;
+RUN;
+```
+`````
+::::
+:::::
+::::: {.column width="50%"}
+
+::::: {.codewindow .html}
+example.html
+<iframe id="myIframe" src="iframes/example_sas_submit.html" style="width: 100%; height: 340px;"></iframe>
+:::::
+:::::
+::::::
+
+:::: {.fragment .writing1 fragment-index=1}
+:::
+
+:::: {.fragment .writing2 fragment-index=2}
+:::
+
+## Writing a sasquatch quarto document
+
+::: {.fragment .highlightword word="pdf" style="background:#8cc1ff;"}
+:::
+
+:::::: {.columns}
+::::: {.column width="50%"}
+:::: {.codewindow .quarto}
+example.qmd
+`````md
+---
+title: "Example"
+format: pdf
+engine: knitr
+---
+
+```{{r}}
+library(sasquatch)
+sas_connect()
+```
+
+```{{sas}}
+PROC PRINT DATA = sashelp.cars (OBS = 10);
+    VAR make model type origin msrp invoice;
+RUN;
+```
+`````
+::::
+:::::
+::::: {.column width="50%"}
+
+::::: {.codewindow}
+example.pdf
+<iframe src="iframes/example_sas_submit.pdf" width="100%" height="600px" style="border: none;"></iframe>
+
+:::::
+:::::
+::::::
+
+## Interactive execution
+
+You can use your sasquatch to visualize SAS output in many of R developers' favorite IDEs.
+
+:::::: columns
+::::: {.column width="50%"}
+::: {style="text-align: center;"}
+RStudio  
+:::
+![](photos/rstudio.gif){style="display: block; margin-left: auto; margin-right: auto; width: 70%;"}
+:::::
+::::: {.column width="50%"}
+::: {style="text-align: center;"}
+Positron/Visual Studio Code
+:::
+![](photos/positron.gif){style="display: block; margin-left: auto; margin-right: auto; width: 70%;"}
+:::::
+::::::
+
+## Basic file management
+
+:::::: columns
+::::: {.column width="30%"}
+sasquatch provides file management functions that emulate those
+from base R
+:::::
+::::: {.column width="5%"}
+:::::
+::::: {.column width="65%"}
+| Function              | Base R Equivalent    |
+|-----------------------|----------------------|
+| `sas_list()`          | `list.files()`        |
+| `sas_file_exists()`   | `file.exists()`       |
+| `sas_file_upload()`   | -                     |
+| `sas_file_download()` | -                     |
+| `sas_file_copy()`     | `file.copy()`         |
+| `sas_file_remove()`   | `file.remove()`       |
+:::::
+::::::
+
+# {{< fa laptop-code >}} Live Demo

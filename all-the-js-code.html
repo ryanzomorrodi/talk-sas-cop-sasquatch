@@ -1,0 +1,66 @@
+<script type="text/javascript">
+    Reveal.on('fragmentshown', event => {
+        if (event.fragment.classList.contains("writing1")) {
+            const iframe = Reveal.getCurrentSlide().querySelector("iframe");
+
+            if (iframe) {
+                const scrollIframe = () => {
+                    iframe.contentWindow?.scrollTo({ top: 6 * 30.36, behavior: 'smooth' });
+                };
+
+                if (iframe.contentWindow?.document.readyState === "complete") {
+                    scrollIframe();
+                } else {
+                    iframe.onload = scrollIframe;
+                }
+
+            }
+        }
+        if (event.fragment.classList.contains("writing2")) {
+            const iframe = Reveal.getCurrentSlide().querySelector("iframe");
+
+            if (iframe) {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                const logTabTrigger = iframeDoc.querySelector('[data-bs-target="#tabset-1-2"]');
+
+                if (logTabTrigger && iframe.contentWindow.bootstrap) {
+                    const tab = new iframe.contentWindow.bootstrap.Tab(logTabTrigger);
+                    tab.show();
+                }
+            }
+        }
+    });
+
+    Reveal.on('fragmenthidden', event => {
+        if (event.fragment.classList.contains("writing1")) {
+            const iframe = Reveal.getCurrentSlide().querySelector("iframe");
+
+            if (iframe) {
+                const scrollIframe = () => {
+                    iframe.contentWindow?.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                if (iframe.contentWindow?.document.readyState === "complete") {
+                    scrollIframe();
+                } else {
+                    iframe.onload = scrollIframe;
+                }
+            }
+        }
+        if (event.fragment.classList.contains("writing2")) {
+            const iframe = Reveal.getCurrentSlide().querySelector("iframe");
+
+            if (iframe) {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                const logTabTrigger = iframeDoc.querySelector('[data-bs-target="#tabset-1-1"]');
+
+                if (logTabTrigger && iframe.contentWindow.bootstrap) {
+                    const tab = new iframe.contentWindow.bootstrap.Tab(logTabTrigger);
+                    tab.show();
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,16 @@
+---
+title: "Example"
+format: html
+engine: knitr
+---
+
+```{r}
+library(sasquatch)
+sas_connect()
+```
+
+```{sas}
+PROC PRINT DATA = sashelp.cars (OBS = 10);
+    VAR make model type origin msrp invoice;
+RUN;
+```
