@@ -31,12 +31,6 @@ engine: knitr
 ::: {.column width="40%"}
 ![](photos/headshot.png){.circle}
 
-```{css}
-img.circle {
-    border-radius: 50%;
-    box-shadow: 15px 15px 5px rgba(0, 0, 0, 0.2);
-}
-```
 :::
 
 :::::
@@ -52,11 +46,6 @@ Take this question:
 ::: {.question}
 <br>"Fit a model with random subject intercepts and week effects. Is this model significantly better than the random-intercepts model? Write the two-level model and interpret the parameters in this model."
 
-```{css}
-.question {
-    font-family: 'Times New Roman', Times, serif;
-}
-```
 :::
 
 <br>To answer this question I must:
@@ -158,13 +147,6 @@ sasquatch serves as a bridge between R and SAS, enabling:
 :::
 :::::
 
-```{css}
-.v-center-container {
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-}
-```
 
 ## How does sasquatch send data between R and SAS?
 
@@ -510,5 +492,19 @@ from base R
 | `sas_file_remove()`   | `file.remove()`       |
 :::::
 ::::::
+
+## Next steps
+
+- Completion of rOpenSci review and transfer to rOpenSci
+    - sasquatch will remain suppported even if I chose to stop maintaining it
+    - rOpenSci opens up new opportunities for promotion (newsletter, blog, social media)
+- Submission to the Comprehensive R Archive Network (CRAN)
+
+Features I'm thinking about:
+
+- Helper configuration functions for the python-challenged
+- R factors to SAS formated variables
+- sasquatch `dir.create()` equivalent
+
 
 # {{< fa laptop-code >}} Live Demo

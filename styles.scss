@@ -67,3 +67,18 @@ $link-color: darken(theme-color("green"), 20%);
         word-wrap: break-word;
     }
 }
+
+img.circle {
+    border-radius: 50%;
+    box-shadow: 15px 15px 5px rgba(0, 0, 0, 0.2);
+}
+
+.question {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.v-center-container {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
